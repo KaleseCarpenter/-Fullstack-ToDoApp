@@ -11,27 +11,42 @@ class App extends React.Component {
         })
         .then((todos) => {
           this.setState({ todos: todos.data.todos });
-          console.log(todos)
         })
         .catch((error) => {
           console.error(error.message);
         });
     }
+    // Create a delete todo method
+    deleteToDo = (id, index) => {
+        fetch(`todos/${id}`, {method: "DELETE"}).then(() =>{
+            this.setState({
+                todos:[
+                    ...this.state.todos.slice(0, index), // TAKE EVRYTHING BEFORE THE USER CLICKED ON!
+                    ...this.state.todos.slice(index + 1), // TAKE EVERYTHING AFTER WHAT THE USER CLICKED ON! slice always stops 1 before the number at the end of the array
+                ],
+            });
+        });
+    };
     render() {
       return (
-        <table>
-          <tbody>
-            {this.state.todos.map((todo) => {
-              return (
-                <tr>
-                  <td> {todo.description} </td>
-                  <td> X </td>
-                  <td> complete </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <ul>
+          {this.state.todos.map((todo, index) => {
+            return (
+              <li>
+                {todo.description}{" "}
+                <button
+                  onClick={() => {
+                    return this.deleteToDo(todo._id, index); // you do ._id to refer to the id in the backend MongoDB database. It is just .id in the frontend
+                  }}
+                >
+                  {" "}
+                  X{" "}
+                </button>
+                <small> complete </small>
+              </li>
+            );
+          })}
+        </ul>
       );
     }
   }
